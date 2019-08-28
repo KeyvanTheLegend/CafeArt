@@ -17,6 +17,7 @@ import UIKit
 //
 
 import UIKit
+import NVActivityIndicatorView
 
 import ImageSlideshow
 import VisualEffectView
@@ -58,15 +59,168 @@ class EventsViewController: UIViewController {
         print("HI")
         print(slider.currentPage)
         indicatorLable.text = "\(slider.currentPage+1) از \(size)"
+        TitleLable.text = Events[slider.currentPage].Title
+        dateLable.text = Events[slider.currentPage].Date
+        DescLable.text = Events[slider.currentPage].Description
+        if( Events[slider.currentPage].Upcoming != true){
+            endLable.isHidden = false
+        }
+        else
+        {
+            endLable.isHidden = true
+
+        }
+
+        
     }
     var size = 0
+    var imageSource : [ImageSource] = []
+    var Events : [EventObject] = []
+    var first = true
+    @IBOutlet weak var endLable: UILabel!
+    
+    @IBOutlet weak var loader: NVActivityIndicatorView!
+    @IBOutlet weak var dateLable: UILabel!
+    @IBOutlet weak var DescLable: UILabel!
+    @IBOutlet weak var TitleLable: UILabel!
     @IBOutlet weak var cmView: UIView!
     @IBOutlet weak var testview: UIView!
     @IBOutlet weak var slider: ImageSlideshow!
     override func viewDidLoad() {
         super.viewDidLoad()
         bluerview.blurRadius = 8
-        
+        loader.startAnimating()
+        ServerCommands.init().getEvents(completion: { json in
+            let des = json["Description"] as! String
+            print(des)
+            var i = 0
+            if let data = des.data(using: .utf8) {
+                do {
+                    let json3 = try JSONSerialization.jsonObject(with: data,    options:JSONSerialization.ReadingOptions.mutableContainers) as!    NSDictionary
+                    let UpcomingEvents = json3["UpcomingEvents"] as! NSArray
+                    let PassedEvents = json3["UpcomingEvents"] as! NSArray
+                    if((UpcomingEvents.count + PassedEvents.count) < 2)
+                    {
+                        self.testview.isHidden = true
+                    }
+                    for event2 in UpcomingEvents{
+                        
+                            i = i + 1
+                            var eventObject = EventObject()
+                            let event2 = event2 as! NSDictionary
+                            let event = event2["Event"] as! NSDictionary
+                            let image = event["ImageUrl"] as! String
+                            eventObject.Date = event["Date"] as! String
+                            eventObject.Upcoming = true
+                            eventObject.Description = event["Description"] as! String
+                            eventObject.Title = event["Title"] as! String
+                            self.Events.append(eventObject)
+                        DispatchQueue.main.async {
+                            if(self.first){
+                            self.TitleLable.text = self.Events[self.slider.currentPage].Title
+                            self.dateLable.text = self.Events[self.slider.currentPage].Date
+                            self.DescLable.text = self.Events[self.slider.currentPage].Description
+                                self.first = false
+                                if( self.Events[self.slider.currentPage].Upcoming != true){
+                                    self.endLable.isHidden = false
+                                }
+                                else
+                                {
+                                    self.endLable.isHidden = true
+                                    
+                                }
+
+                            }
+                            
+                            
+                        }
+                        ServerCommands.init().GetImage(Link: image, completion: { x in
+                            DispatchQueue.main.async {
+                                
+                                let img2 = self.base64Convert(base64String: x as! String)
+                                
+                                self.imageSource.append(ImageSource(image: img2))
+                                self.slider.setImageInputs(self.imageSource)
+                                self.size = self.slider.images.count
+                                self.indicatorLable.text = "\(self.slider.currentPage+1) از \(self.size)"
+                                self.indicatorLable.isHidden = false
+                                self.testview.isHidden = false
+                                self.slider.reloadInputViews()
+                                
+                            }
+                            
+                        }, unauthorized: { e in
+                            
+                        }, onError:{ e in
+                            
+                        })
+                        
+                        
+                    }
+                    for event2 in PassedEvents{
+                        DispatchQueue.main.async {
+                            i = i + 1
+                            var eventObject = EventObject()
+                            let event2 = event2 as! NSDictionary
+                            let event = event2["Event"] as! NSDictionary
+                            let image = event["ImageUrl"] as! String
+                            eventObject.Date = event["Date"] as! String
+                            eventObject.Description = event["Description"] as! String
+                            eventObject.Title = event["Title"] as! String
+                            self.Events.append(eventObject)
+                            if(self.first){
+                                self.TitleLable.text = self.Events[self.slider.currentPage].Title
+                                self.dateLable.text = self.Events[self.slider.currentPage].Date
+                                self.DescLable.text = self.Events[self.slider.currentPage].Description
+                                self.first = false
+                                if( self.Events[self.slider.currentPage].Upcoming != true){
+                                    self.endLable.isHidden = false
+                                }
+                                else
+                                {
+                                    self.endLable.isHidden = true
+                                    
+                                }
+                                
+                            }
+                            ServerCommands.init().GetImage(Link: image, completion: { x in
+                                DispatchQueue.main.async {
+                                    
+                                    let img2 = self.base64Convert(base64String: x as! String)
+                                    
+                                    self.imageSource.append(ImageSource(image: img2))
+                                    self.slider.setImageInputs(self.imageSource)
+                                    self.size = self.slider.images.count
+                                    self.indicatorLable.text = "\(self.slider.currentPage+1) از \(self.size)"
+                                    self.indicatorLable.isHidden = false
+                                    self.testview.isHidden = false
+                                    self.slider.reloadInputViews()
+                                    if(i == ( PassedEvents.count + UpcomingEvents.count) ){
+                                        print("HasddI\(i)")
+                                        self.loader.isHidden = true
+                                    }
+                                    
+                                }
+                                
+                            }, unauthorized: { e in
+                                
+                            }, onError:{ e in
+                                
+                            })
+                            
+                            
+                            
+                        }
+                    }
+                }catch{
+                    
+                }
+                
+            }        }, unauthorized: { e in
+            
+        }) { e in
+            
+        }
         let pageIndicator = UIPageControl()
         let Colors = Coloros.init()
         pageIndicator.currentPageIndicatorTintColor = Colors.DarkColor

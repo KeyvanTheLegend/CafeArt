@@ -40,7 +40,16 @@ class EditViewController: UIViewController {
         }
     }
     @IBAction func sabt(_ sender: Any) {
+        ServerCommands.init().update(Name: editText1.text!, Birthdate: birthDay, completion: { json in
+            DispatchQueue.main.async {
+                self.   dismiss(animated: true)
 
+            }
+        }, unauthorized: { e in
+            
+        }) { e in
+            
+        }
     }
     
     @IBOutlet weak var britDayLable: UILabel!

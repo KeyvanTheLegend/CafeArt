@@ -199,6 +199,44 @@ public class ServerCommands {
         task.resume()
         return
     }
+    public func getEvents (completion: @escaping (_ success: NSDictionary) -> (),unauthorized: @escaping (_ unauthorized: String) -> (),onError: @escaping (_ error: Error) -> ()) -> () {
+        let SERVER_URL = "\(self.SERVER_URL)events/sorted"
+        let url :URL! = URL(string: SERVER_URL)
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        let token = sharedPref.object(forKey: "Token") as! String
+        let Id = sharedPref.object(forKey: "Id") as! String
+        
+        request.setValue(Id, forHTTPHeaderField: "Id")
+        request.setValue(token, forHTTPHeaderField: "Token")
+        let session = URLSession.shared
+        let task = session.dataTask(with:request) { (data, oncompele, error) -> Void in
+            if (error == nil){
+                _ = String(data: data!, encoding: String.Encoding.utf8)
+                if let httpResponse = oncompele as? HTTPURLResponse {
+                    if(httpResponse.statusCode == 200){
+                        do {
+                            let json = try JSONSerialization.jsonObject(with: data!,    options:JSONSerialization.ReadingOptions.mutableContainers) as!    NSDictionary
+                            completion(json)
+                        }
+                        catch{
+                            print("not a valid json")
+                        }
+                    }
+                    else if(httpResponse.statusCode == 401){
+                        //print("unathorized")
+                        unauthorized("unathorized")
+                    }
+                }
+            }
+            else{
+                onError(error!)
+                print("abas")
+            }
+        }
+        task.resume()
+        return
+    }
     public func profile (completion: @escaping (_ success: NSDictionary) -> (),unauthorized: @escaping (_ unauthorized: String) -> (),onError: @escaping (_ error: Error) -> ()) -> () {
         let SERVER_URL = "\(self.SERVER_URL)user/profile"
         let url :URL! = URL(string: SERVER_URL)
@@ -275,6 +313,7 @@ public class ServerCommands {
         task.resume()
         return
     }
+    
     public func SendActivationCode2 (MobileNumber : String ,completion: @escaping (_ success: NSDictionary) -> (),unauthorized: @escaping (_ unauthorized: String) -> (),onError: @escaping (_ error: Error) -> ()) -> () {
         let SERVER_URL = "\(self.SERVER_URL)user/enter"
         let sharedPref = UserDefaults.standard
@@ -359,6 +398,49 @@ public class ServerCommands {
                                 }
                                 
                             }
+                        }
+                        catch{
+                            print("not a valid json")
+                        }
+                    }
+                    else if(httpResponse.statusCode == 401){
+                        //print("unathorized")
+                        unauthorized("unathorized")
+                    }
+                }
+            }
+            else{
+                onError(error!)
+            }
+        }
+        task.resume()
+        return
+    }
+    public func update (Name : String,Birthdate : String,completion: @escaping (_ success: NSDictionary) -> (),unauthorized: @escaping (_ unauthorized: String) -> (),onError: @escaping (_ error: Error) -> ()) -> () {
+        let SERVER_URL = "\(self.SERVER_URL)user/profile/update"
+        let sharedPref = UserDefaults.standard
+        let url :URL! = URL(string: SERVER_URL)
+        var request = URLRequest(url: url)
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        //request.setValue(sharedPref.object(forKey: "NikaPayToken") as? String, forHTTPHeaderField: "SubscriberToken")
+        request.httpMethod = "POST"
+        Formatter.locale = NSLocale(localeIdentifier: "EN") as Locale
+
+        let session = URLSession.shared
+        let json: [String: Any] = ["Name": "\(Name)" ,"Birthdate" : "\(Birthdate)"]
+        let jsonData = try? JSONSerialization.data(withJSONObject: json)
+        request.httpBody = jsonData
+        let task = session.dataTask(with:request) { (data, oncompele, error) -> Void in
+            if (error == nil){
+                _ = String(data: data!, encoding: String.Encoding.utf8)
+                if let httpResponse = oncompele as? HTTPURLResponse {
+                    if(httpResponse.statusCode == 200){
+                        do {
+                            let json = try JSONSerialization.jsonObject(with: data!,    options:JSONSerialization.ReadingOptions.mutableContainers) as!    NSDictionary
+                            completion(json)
+ 
+                                
+                            
                         }
                         catch{
                             print("not a valid json")

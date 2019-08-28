@@ -13,12 +13,18 @@ import Cosmos
 import NVActivityIndicatorView
 class testViewController: UIViewController {
     @IBOutlet weak var editText: UITextField!
+    let sharedPref = UserDefaults.standard
+
     var items : [itemObject] =  []
     var rowid = 0
 
     @IBAction func sendmsg(_ sender: Any) {
         cmOpen = false
         print("HI")
+        let token = sharedPref.object(forKey: "UserType") as! String
+        if(token == "activated"){
+           
+
         ServerCommands.init().Comment(id: items[rowid].Id, Comment1: editText.text! , Rate: Int(stars.rating), completion: { x in
             print(x)
         }, unauthorized: { e in
@@ -69,6 +75,13 @@ class testViewController: UIViewController {
         editText.endEditing(true)
         ui_scroll_view.isScrollEnabled = false
         dismissKeyboard()
+        }
+        else{
+            let target = getViewController(id: "SignUpViewControllerPoPup") as! SignUpViewControllerPoPup
+            self.present(target, animated: true) {
+                
+            }
+        }
     }
     @IBOutlet weak var ui_scroll_view: UIScrollView!
     @IBOutlet weak var titleLable: UILabel!
@@ -120,6 +133,8 @@ class testViewController: UIViewController {
     }
     var liked : Bool = false
     @IBAction func likeaction(_ sender: Any) {
+        let token = sharedPref.object(forKey: "UserType") as! String
+        if(token == "activated"){
         ServerCommands.init().Like(id: items[rowid].Id, completion: { x in
             print(x)
         }, unauthorized: { e in
@@ -148,6 +163,15 @@ class testViewController: UIViewController {
             likesCountLable.text = "\(likecount)" as String
 
         }
+        }
+        else{
+            let target = getViewController(id: "SignUpViewControllerPoPup") as! SignUpViewControllerPoPup
+            self.present(target, animated: true) {
+                
+            }
+        }
+
+        
     }
     @IBOutlet weak var loader: NVActivityIndicatorView!
     var likecount = 0

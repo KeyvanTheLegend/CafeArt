@@ -10,6 +10,7 @@ import UIKit
 import ImageSlideshow
 import VisualEffectView
 import Cosmos
+import NVActivityIndicatorView
 class GallaryViewController: UIViewController {
     @IBAction func backp(_ sender: Any) {
         dismiss(animated: true)
@@ -30,11 +31,13 @@ class GallaryViewController: UIViewController {
     }
     var size = 0
     var imageSource : [ImageSource] = []
-
+    @IBOutlet weak var loader: NVActivityIndicatorView!
+    
     @IBOutlet weak var testview: UIView!
     @IBOutlet weak var slider: ImageSlideshow!
     override func viewDidLoad() {
         super.viewDidLoad()
+        loader.startAnimating()
         ServerCommands.init().getGallary(completion: { json in
             let des = json["Description"] as! String
             print(des)
@@ -54,7 +57,14 @@ class GallaryViewController: UIViewController {
                                     
                                     self.imageSource.append(ImageSource(image: img2))
                                     self.slider.setImageInputs(self.imageSource)
+                                    self.size = self.slider.images.count
+                                    self.indicatorLable.text = "\(self.slider.currentPage+1) از \(self.size)"
+                                    self.indicatorLable.isHidden = false
+                                    self.testview.isHidden = false
                                     self.slider.reloadInputViews()
+                                    if(i == json3.count){
+                                        self.loader.isHidden = false
+                                    }
                                     
                                 }
                                
@@ -85,13 +95,7 @@ class GallaryViewController: UIViewController {
         ui_scroll_view.keyboardDismissMode = .onDrag
         slider.pageIndicator = pageIndicator
         slider.didEndDecelerating = x
-        slider.setImageInputs([
-            ImageSource(image: UIImage(named: "IMG_0703")!),ImageSource(image: UIImage(named: "Group-197")!),ImageSource(image: UIImage(named: "Group-197")!),ImageSource(image: UIImage(named: "Group-197")!),ImageSource(image: UIImage(named: "Group-197")!),
-            ImageSource(image: UIImage(named: "Group-198")!)
-            ])
-        
-        size = slider.images.count
-        indicatorLable.text = "\(slider.currentPage+1) از \(size)"
+       
         
         slider.pageIndicator = nil
         slider.contentScaleMode = .scaleAspectFill

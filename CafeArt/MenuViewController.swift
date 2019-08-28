@@ -114,6 +114,7 @@ class MenuViewController: UIViewController,UITableViewDataSource, UITableViewDel
 
         ServerCommands.init().SendActivationCode(MobileNumber: "t", completion: { json in
             print("Hiasd")
+            print(json)
             let array = json.value(forKey: "Description") as! String
             if let data = array.data(using: .utf8) {
                 
