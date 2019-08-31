@@ -12,6 +12,10 @@ import VisualEffectView
 import Cosmos
 import NVActivityIndicatorView
 class testViewController: UIViewController {
+    
+    @IBOutlet weak var imageVw: UIImageView!
+    
+    
     @IBOutlet weak var editText: UITextField!
     let sharedPref = UserDefaults.standard
 
@@ -149,7 +153,6 @@ class testViewController: UIViewController {
             items[rowid].isLiked = false
             likesCountLable.text = "\(likecount)" as String
             items[rowid].LikesCount = likecount
-
             likeImage.image = UIImage(named: "like(1)")
 
             
@@ -158,7 +161,7 @@ class testViewController: UIViewController {
             liked = true
             likecount = likecount + 1
             likeImage.image = UIImage(named: "like2")
-            items[rowid].isLiked = false
+            items[rowid].isLiked = true
             items[rowid].LikesCount = likecount
             likesCountLable.text = "\(likecount)" as String
 
@@ -177,7 +180,7 @@ class testViewController: UIViewController {
     var likecount = 0
     @IBOutlet weak var likeImage: UIImageView!
     @IBOutlet weak var bishtar: UILabel!
-
+let pageIndicator = UIPageControl()
     @IBOutlet weak var testview: UIView!
     @IBOutlet weak var width: NSLayoutConstraint!
     @IBOutlet weak var height: NSLayoutConstraint!
@@ -188,6 +191,9 @@ class testViewController: UIViewController {
         bluerview.blurRadius = 8
         let item = items[rowid]
         liked = item.isLiked
+        testview.isHidden = true
+        print(liked)
+        
         if(!liked){
             
             likeImage.image = UIImage(named: "like(1)")
@@ -208,6 +214,11 @@ class testViewController: UIViewController {
         likecount = item.LikesCount
         var i = 0
         loader.startAnimating()
+        if (item.Gallery.count<2){
+            testview.isHidden = true
+
+        }
+
         for x in item.Gallery {
             print("HI assss")
             print(i)
@@ -217,10 +228,18 @@ class testViewController: UIViewController {
                     i = i + 1
 
                     let img2 = self.base64Convert(base64String: json)
+                    
                     imageSource.append(ImageSource(image: img2))
                     self.slider.setImageInputs(imageSource)
+                    self.width.constant = self.pageIndicator.bounds.width + 25
+                    if(i>1){
+                        self.testview.isHidden = false
+                        print("HI")
+
+                    }
                     if(i == (item.Gallery.count )){
                         print("HI Gooozo")
+                        
                         self.loader.isHidden = true
                         self.loader.stopAnimating()
                     }
@@ -239,7 +258,7 @@ class testViewController: UIViewController {
         }
         
         
-        let pageIndicator = UIPageControl()
+        
         let Colors = Coloros.init()
         pageIndicator.currentPageIndicatorTintColor = Colors.DarkColor
         pageIndicator.pageIndicatorTintColor = Colors.tintColor
@@ -337,6 +356,20 @@ class testViewController: UIViewController {
             
 
     }
+    
+    var v = false
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        //setting gradient
+        if(!v){
+            v = true
+            let Colors = Coloros.init()
+            
+            imageVw.setGradientBackground(colorOne: Colors.title_start_color, colorTwo: Colors.title_end_color,colorThree: Colors.title_end_color)
+            
+        }
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         print(self.cmView.frame.size)
         let cmwitdh = Double(cmView.frame.size.width) - 40
@@ -346,9 +379,7 @@ class testViewController: UIViewController {
        
     }
     @IBOutlet weak var parent2: UIView!
-    override func viewDidLayoutSubviews() {
-       
-    }
+    
     var cmOpen = false
     @IBAction func commentAction(_ sender: Any) {
         var headerTransform = CATransform3DIdentity

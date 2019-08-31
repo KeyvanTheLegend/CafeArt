@@ -10,26 +10,43 @@ import UIKit
 import VisualEffectView
 
 class EditViewController: UIViewController {
-    @IBOutlet weak var editText1: UITextField!
-    @IBOutlet weak var editText2: UITextField!
     
+    
+    @IBOutlet weak var imageVw: UIImageView!
+    
+    @IBOutlet weak var editText1: UITextField!
+    
+    @IBOutlet weak var birthDayLabel: UILabel!
     @IBOutlet weak var lable1: UILabel!
     @IBOutlet weak var lable2: UILabel!
     @IBAction func startediting(_ sender: Any) {
         lable1.text = editText1.text
     }
-    @IBAction func startediting2(_ sender: Any) {
-        lable2.text = editText2.text
 
-    }
     var namevar = ""
     var numbervar = ""
+    
+    var x = false
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        //setting gradient
+        if(!x){
+            x = true
+            let Colors = Coloros.init()
+            
+            imageVw.setGradientBackground(colorOne: Colors.title_start_color, colorTwo: Colors.title_end_color,colorThree: Colors.title_end_color)
+            
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         lable1.text = namevar
         lable2.text = numbervar
         blurView.blurRadius = 3
+        
+        birthDayLabel.text = birthDay
+        
         // Do any additional setup after loading the view.
     }
     @IBOutlet weak var blurView: VisualEffectView!
@@ -40,9 +57,10 @@ class EditViewController: UIViewController {
         }
     }
     @IBAction func sabt(_ sender: Any) {
-        ServerCommands.init().update(Name: editText1.text!, Birthdate: birthDay, completion: { json in
+        ServerCommands.init().update(Name: lable1.text!, Birthdate: birthDay, completion: { json in
+            print(json)
             DispatchQueue.main.async {
-                self.   dismiss(animated: true)
+                self.dismiss(animated: true)
 
             }
         }, unauthorized: { e in

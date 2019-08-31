@@ -24,6 +24,9 @@ import VisualEffectView
 import Cosmos
 class EventsViewController: UIViewController {
     
+    
+    @IBOutlet weak var imageVw: UIImageView!
+    
     @IBOutlet weak var tozihatbishtarLable: UILabel!
     @IBAction func backp(_ sender: Any) {
         dismiss(animated: true)
@@ -62,13 +65,17 @@ class EventsViewController: UIViewController {
         TitleLable.text = Events[slider.currentPage].Title
         dateLable.text = Events[slider.currentPage].Date
         DescLable.text = Events[slider.currentPage].Description
-        if( Events[slider.currentPage].Upcoming != true){
-            endLable.isHidden = false
+        if( self.Events[self.slider.currentPage].Upcoming != true){
+            self.endLable.isHidden = false
+            self.endLable.text = "تمام شد"
+            print("HIasdasdasd")
         }
         else
         {
-            endLable.isHidden = true
-
+            self.endLable.isHidden = true
+            self.endLable.text =  ""
+            
+            
         }
 
         
@@ -86,6 +93,20 @@ class EventsViewController: UIViewController {
     @IBOutlet weak var cmView: UIView!
     @IBOutlet weak var testview: UIView!
     @IBOutlet weak var slider: ImageSlideshow!
+    
+    var v = false
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        //setting gradient
+        if(!v){
+            v = true
+            let Colors = Coloros.init()
+            
+            imageVw.setGradientBackground(colorOne: Colors.title_start_color, colorTwo: Colors.title_end_color,colorThree: Colors.title_end_color)
+            
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         bluerview.blurRadius = 8
@@ -123,10 +144,14 @@ class EventsViewController: UIViewController {
                                 self.first = false
                                 if( self.Events[self.slider.currentPage].Upcoming != true){
                                     self.endLable.isHidden = false
+                                    self.endLable.text = "تمام شد"
+                                    print("HIasdasdasd")
                                 }
                                 else
                                 {
                                     self.endLable.isHidden = true
+                                    self.endLable.text =  ""
+
                                     
                                 }
 
@@ -167,6 +192,7 @@ class EventsViewController: UIViewController {
                             eventObject.Date = event["Date"] as! String
                             eventObject.Description = event["Description"] as! String
                             eventObject.Title = event["Title"] as! String
+                            eventObject.Upcoming = false
                             self.Events.append(eventObject)
                             if(self.first){
                                 self.TitleLable.text = self.Events[self.slider.currentPage].Title
@@ -229,11 +255,7 @@ class EventsViewController: UIViewController {
         ui_scroll_view.keyboardDismissMode = .onDrag
         slider.pageIndicator = pageIndicator
         slider.didEndDecelerating = x
-        slider.setImageInputs([
-            ImageSource(image: UIImage(named: "IMG_0703")!),ImageSource(image: UIImage(named: "Group-197")!),ImageSource(image: UIImage(named: "Group-197")!),ImageSource(image: UIImage(named: "Group-197")!),ImageSource(image: UIImage(named: "Group-197")!),
-            ImageSource(image: UIImage(named: "Group-198")!)
-            ])
-        
+ 
         size = slider.images.count
         indicatorLable.text = "\(slider.currentPage+1) از \(size)"
 
@@ -309,9 +331,7 @@ class EventsViewController: UIViewController {
         
     }
     @IBOutlet weak var parent2: UIView!
-    override func viewDidLayoutSubviews() {
-        
-    }
+   
     
     /*
      // MARK: - Navigation

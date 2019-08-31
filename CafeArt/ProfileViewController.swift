@@ -10,6 +10,10 @@ import UIKit
 import VisualEffectView
 
 class ProfileViewController: UIViewController,UICollectionViewDelegate ,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout{
+    
+    
+    @IBOutlet weak var imageVw: UIImageView!
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return SomeArray.count
     }
@@ -51,8 +55,23 @@ class ProfileViewController: UIViewController,UICollectionViewDelegate ,UICollec
     }
     var myname = ""
     var number = ""
+    var birthDay = ""
     var NotHero : Bool = true
     @IBOutlet weak var BlurView: VisualEffectView!
+    
+    var x = false
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        //setting gradient
+        if(!x){
+            x = true
+            let Colors = Coloros.init()
+            
+            imageVw.setGradientBackground(colorOne: Colors.title_start_color, colorTwo: Colors.title_end_color,colorThree: Colors.title_end_color)
+            
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         print("HI")
@@ -67,8 +86,21 @@ class ProfileViewController: UIViewController,UICollectionViewDelegate ,UICollec
                     DispatchQueue.main.async {
                         let x = json3["ProfileInfo"] as! NSDictionary
                         //print(x)
-                        self.myname = x["Name"] as! String
+                        if (x["Name"] is NSNull) {
+                            self.myname = "-"
+                        } else {
+                            self.myname = x["Name"] as! String
+
+                        }
+                        
                         self.number = x["PhoneNumber"] as! String
+                        if (x["BirthDate"] is NSNull) {
+                            self.birthDay = "-"
+                        } else {
+                            self.birthDay = x["BirthDate"] as! String
+
+                        }
+                        
 
                       
                         let fav = json3["FavoriteItems"] as! NSArray
@@ -108,7 +140,10 @@ class ProfileViewController: UIViewController,UICollectionViewDelegate ,UICollec
        let target =  getViewController(id: "EditViewController") as! EditViewController
         target.namevar = nameLable.text!
         target.numbervar = numberLable.text!
+        target.birthDay = birthDay
+        
         self.present(target,animated: true)
+        
         
     }
     @IBOutlet weak var collectionViews: UICollectionView!

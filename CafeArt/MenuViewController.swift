@@ -9,6 +9,11 @@
 import UIKit
 import NVActivityIndicatorView
 class MenuViewController: UIViewController,UITableViewDataSource, UITableViewDelegate {
+    
+    @IBOutlet weak var imageVw: UIImageView!
+    
+    
+    
     @IBOutlet weak var dss: NVActivityIndicatorView!
     func numberOfSelectionsInTableView (tableView: UITableView) -> Int {
         return 1
@@ -26,6 +31,7 @@ class MenuViewController: UIViewController,UITableViewDataSource, UITableViewDel
         return Cats.count
         
     }
+    @IBOutlet weak var loader2: NVActivityIndicatorView!
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let item = Cats[indexPath.row]
         ServerCommands.init().Items(rowId: "\(item.RowId!)", completion: { json in
@@ -108,10 +114,23 @@ class MenuViewController: UIViewController,UITableViewDataSource, UITableViewDel
 
     @IBOutlet weak var dass: NVActivityIndicatorView!
     var Cats : [CatObejcts] = []
+    var x = false
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        //setting gradient
+        if(!x){
+            x = true
+            let Colors = Coloros.init()
+
+             imageVw.setGradientBackground(colorOne: Colors.title_start_color, colorTwo: Colors.title_end_color,colorThree: Colors.title_end_color)
+            
+        }
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         self.mytable.separatorStyle = UITableViewCell.SeparatorStyle.none
-
+        loader2.startAnimating()
+       
         ServerCommands.init().SendActivationCode(MobileNumber: "t", completion: { json in
             print("Hiasd")
             print(json)
@@ -135,6 +154,7 @@ class MenuViewController: UIViewController,UITableViewDataSource, UITableViewDel
                     DispatchQueue.main.async {
                         //reload data
                         self.mytable.reloadData()
+                        self.loader2.isHidden = true
                         print("hi")
                     }
                     

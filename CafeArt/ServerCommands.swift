@@ -425,7 +425,11 @@ public class ServerCommands {
         //request.setValue(sharedPref.object(forKey: "NikaPayToken") as? String, forHTTPHeaderField: "SubscriberToken")
         request.httpMethod = "POST"
         Formatter.locale = NSLocale(localeIdentifier: "EN") as Locale
-
+        let token = sharedPref.object(forKey: "Token") as! String
+        let Id = sharedPref.object(forKey: "Id") as! String
+        
+        request.setValue(Id, forHTTPHeaderField: "Id")
+        request.setValue(token, forHTTPHeaderField: "Token")
         let session = URLSession.shared
         let json: [String: Any] = ["Name": "\(Name)" ,"Birthdate" : "\(Birthdate)"]
         let jsonData = try? JSONSerialization.data(withJSONObject: json)

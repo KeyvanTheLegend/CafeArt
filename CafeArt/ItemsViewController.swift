@@ -7,8 +7,14 @@
 //
 
 import UIKit
-
+import NVActivityIndicatorView
 class ItemsViewController: UIViewController,UITableViewDataSource, UITableViewDelegate {
+    
+    @IBOutlet weak var imageVw: UIImageView!
+    
+    
+    @IBOutlet weak var loader3: NVActivityIndicatorView!
+    
     func numberOfSelectionsInTableView (tableView: UITableView) -> Int {
         return 1
     }
@@ -49,6 +55,7 @@ class ItemsViewController: UIViewController,UITableViewDataSource, UITableViewDe
                     let img2 = self.base64Convert(base64String: json)
                     cell.backgroundimg.image = img2
                     cell.loader.isHidden = true
+                    self.loader3.isHidden = true
                     
                 }
                 
@@ -62,6 +69,18 @@ class ItemsViewController: UIViewController,UITableViewDataSource, UITableViewDe
         print(cell.frame.height)
         return cell
     }
+    var x = false
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        //setting gradient
+        if(!x){
+            x = true
+            let Colors = Coloros.init()
+            
+            imageVw.setGradientBackground(colorOne: Colors.title_start_color, colorTwo: Colors.title_end_color,colorThree: Colors.title_end_color)
+            
+        }
+    }
     
     
     override func viewDidLoad() {
@@ -69,6 +88,8 @@ class ItemsViewController: UIViewController,UITableViewDataSource, UITableViewDe
         
         self.mytable.separatorStyle = UITableViewCell.SeparatorStyle.none
        
+        //loader3.startAnimating()
+
         
         // Do any additional setup after loading the view.
     }

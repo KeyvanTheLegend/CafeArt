@@ -10,6 +10,10 @@ import UIKit
 import GoogleMaps
 
 class MapController: UIViewController, GMSMapViewDelegate,CLLocationManagerDelegate {
+    
+    @IBOutlet weak var imageVw: UIImageView!
+    
+    
     var long : Double?
     var lat1 : Double?
     private let locationManager = CLLocationManager()
@@ -39,17 +43,30 @@ class MapController: UIViewController, GMSMapViewDelegate,CLLocationManagerDeleg
         // 7
        // print("HI")
         let marker = GMSMarker()
-        marker.position = CLLocationCoordinate2D(latitude: 36.593693, longitude: 53.063637)
-        marker.icon = self.imageWithImage(image: UIImage(named: "map_icon_cafe_honar")!, scaledToSize: CGSize(width: 55, height:60))
+        
+        marker.position = CLLocationCoordinate2D(latitude:  36.562315, longitude: 53.075982)
+        marker.icon = self.imageWithImage(image: UIImage(named: "Group 211")!, scaledToSize: CGSize(width: 55, height:65))
 
         marker.title = "Cafe Honar"
         marker.snippet = "Sari"
         marker.map = mapView
         //print(location.coordinate)
-        mapView.camera = GMSCameraPosition(target: CLLocationCoordinate2D(latitude: 36.593693, longitude: 53.063637), zoom: 15, bearing: 0, viewingAngle: 0)
+        mapView.camera = GMSCameraPosition(target: CLLocationCoordinate2D(latitude:  36.562315, longitude: 53.075982), zoom: 15, bearing: 0, viewingAngle: 0)
         lat1 = location.coordinate.latitude
         long = location.coordinate.longitude
         locationManager.stopUpdatingLocation()
+    }
+    var x = false
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        //setting gradient
+        if(!x){
+            x = true
+            let Colors = Coloros.init()
+            
+            imageVw.setGradientBackground(colorOne: Colors.title_start_color, colorTwo: Colors.title_end_color,colorThree: Colors.title_end_color)
+            
+        }
     }
     
     override func viewDidLoad() {

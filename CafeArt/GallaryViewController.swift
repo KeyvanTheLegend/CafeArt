@@ -12,6 +12,11 @@ import VisualEffectView
 import Cosmos
 import NVActivityIndicatorView
 class GallaryViewController: UIViewController {
+    
+    @IBOutlet weak var imageVw: UIImageView!
+    
+    
+    
     @IBAction func backp(_ sender: Any) {
         dismiss(animated: true)
     }
@@ -35,6 +40,20 @@ class GallaryViewController: UIViewController {
     
     @IBOutlet weak var testview: UIView!
     @IBOutlet weak var slider: ImageSlideshow!
+    var z = false
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        //setting gradient
+        if(!z){
+            z = true
+            let Colors = Coloros.init()
+            
+            imageVw.setGradientBackground(colorOne: Colors.title_start_color, colorTwo: Colors.title_end_color,colorThree: Colors.title_end_color)
+            
+        }
+    }
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         loader.startAnimating()
@@ -62,8 +81,11 @@ class GallaryViewController: UIViewController {
                                     self.indicatorLable.isHidden = false
                                     self.testview.isHidden = false
                                     self.slider.reloadInputViews()
+                                    print(i)
+                                    print(json3.count)
                                     if(i == json3.count){
-                                        self.loader.isHidden = false
+                                        
+                                        self.loader.isHidden = true
                                     }
                                     
                                 }
@@ -113,9 +135,7 @@ class GallaryViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
       
     }
-    override func viewDidLayoutSubviews() {
-        
-    }
+    
     
     /*
      // MARK: - Navigation
